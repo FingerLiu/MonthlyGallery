@@ -1,13 +1,15 @@
 package com.luojilab.liupeng.monthlygallery
 
 import android.content.Context
+import android.content.Intent
+import android.os.Bundle
+import android.support.v4.content.ContextCompat.startActivity
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_item.view.*
-import kotlinx.android.synthetic.main.activity_main.view.*
 
 class GalleryAdapter(val items: ArrayList<GalleryDate>, val context:
 Context): RecyclerView.Adapter<ViewHolder>() {
@@ -30,8 +32,6 @@ Context): RecyclerView.Adapter<ViewHolder>() {
 }
 
 class ViewHolder (view: View) : RecyclerView.ViewHolder(view) {
-    // Holds the TextView that will add each animal to
-    // Toast.makeText(v,  "month " + month.text.toString() + "of year " + year.text.toString(),  Toast.LENGTH_SHORT).show()
     val month = view.tv_month
     val year = view.tv_year
 
@@ -40,6 +40,12 @@ class ViewHolder (view: View) : RecyclerView.ViewHolder(view) {
             Toast.makeText(v.context,
                     "month " + month.text.toString() + " of year " + year.text.toString(),
                     Toast.LENGTH_SHORT).show()
+            // Create an Intent to start the second activity
+            val monthIntent = Intent(v.context, MonthActivity::class.java)
+            monthIntent.putExtra(MonthActivity.DATE_REPR, month.text.toString()+"."+year.text.toString())
+
+            // Start the new activity.
+            startActivity(v.context, monthIntent, null)
         }
     }
 }
