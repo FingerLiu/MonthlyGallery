@@ -1,12 +1,18 @@
 package com.luojilab.liupeng.monthlygallery
 
+import android.Manifest
 import android.app.PendingIntent.getActivity
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.support.v4.app.ActivityCompat
 import android.support.v4.app.LoaderManager
+import android.support.v4.content.ContextCompat
 import android.support.v4.content.Loader
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
 import com.bumptech.glide.Glide
+import com.bumptech.glide.MemoryCategory
 import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader
 import com.luojilab.liupeng.monthlygallery.MonthActivity.Companion.DATE_REPR
 import com.luojilab.liupeng.monthlygallery.R.id.galleryRecyclerView
@@ -15,6 +21,9 @@ import kotlinx.android.synthetic.main.activity_month.*
 
 
 class MonthActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<List<MediaStoreData>> {
+
+
+    private val REQUEST_READ_STORAGE = 0
 
     companion object {
         const val DATE_REPR = "MONTH YEAR"
@@ -25,8 +34,16 @@ class MonthActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<List<Me
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_month)
+
+        // 显示标题
         showDate()
+
+        GlideApp.get(this).setMemoryCategory(MemoryCategory.HIGH)
+
+        // 暂时只支持 API 23 及以上
+        requestStoragePermission()
         loadPics()
+
         galleryRecyclerView.setHasFixedSize(true)
         galleryRecyclerView.layoutManager = GridLayoutManager(this, 3)
         galleryRecyclerView.adapter = MonthAdapter(pics, this)
@@ -81,5 +98,11 @@ class MonthActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<List<Me
         pics.add("pic22")
         pics.add("pic23")
         pics.add("pic24")
+    }
+
+    private fun requestStoragePermission() {
+        ActivityCompat.requestPermissions(this,
+                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                REQUEST_READ_STORAGE)
     }
 }
