@@ -1,32 +1,28 @@
 package com.luojilab.liupeng.monthlygallery
 
 import android.Manifest
-import android.app.PendingIntent.getActivity
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.LoaderManager
-import android.support.v4.content.ContextCompat
 import android.support.v4.content.Loader
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
-import com.bumptech.glide.Glide
 import com.bumptech.glide.MemoryCategory
 import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader
-import com.luojilab.liupeng.monthlygallery.MonthActivity.Companion.DATE_REPR
-import com.luojilab.liupeng.monthlygallery.R.id.galleryRecyclerView
-import com.luojilab.liupeng.monthlygallery.R.id.monthTextView
 import kotlinx.android.synthetic.main.activity_month.*
-
+import android.provider.MediaStore
+import android.util.Log
+import java.util.*
 
 class MonthActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<List<MediaStoreData>> {
-
 
     private val REQUEST_READ_STORAGE = 0
 
     companion object {
         const val DATE_REPR = "MONTH YEAR"
+        const val DATE_FROM = "20180801"
+        const val DATE_TO = "20180901"
+//        const val DATE_START = Calendar.getInstance()
     }
 
     val pics: ArrayList<String> = ArrayList()
@@ -43,16 +39,24 @@ class MonthActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<List<Me
         // 暂时只支持 API 23 及以上
         requestStoragePermission()
         loadPics()
-
         galleryRecyclerView.setHasFixedSize(true)
         galleryRecyclerView.layoutManager = GridLayoutManager(this, 3)
-        galleryRecyclerView.adapter = MonthAdapter(pics, this)
+        // galleryRecyclerView.adapter = MonthAdapter(pics, this)
 
         LoaderManager.getInstance(this).initLoader(R.id.loader_id_media_store_data, null, this)
     }
 
     override fun onCreateLoader(i: Int, bundle: Bundle?): Loader<List<MediaStoreData>> {
-        return MediaStoreDataLoader(this)
+
+        val dateFrom = intent.getStringExtra(DATE_FROM)
+        val dateTo = intent.getStringExtra(DATE_TO)
+        Log.e("???????????", dateFrom)
+        Log.e("???????????", dateTo)
+        val selection : String = String.format("%s >? and %s <? ",
+                MediaStore.Images.Media.DATE_TAKEN, MediaStore.Images.Media.DATE_TAKEN)
+        val selectionArgs : Array<String>? = arrayOf(dateFrom, dateTo)
+        return MediaStoreDataLoader(this,
+                selection, selectionArgs)
     }
 
     override fun onLoadFinished(loader: Loader<List<MediaStoreData>>,

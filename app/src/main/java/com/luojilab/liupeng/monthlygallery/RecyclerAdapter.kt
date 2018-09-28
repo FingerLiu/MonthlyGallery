@@ -17,7 +17,9 @@ import android.view.ViewTreeObserver
 import android.view.WindowManager
 import kotlinx.android.synthetic.main.activity_month_item.view.*
 
-internal class RecyclerAdapter(context: Context, private val data: List<MediaStoreData>, glideRequests: GlideRequests) : RecyclerView.Adapter<RecyclerAdapter.ListViewHolder>(), ListPreloader.PreloadSizeProvider<MediaStoreData>, ListPreloader.PreloadModelProvider<MediaStoreData> {
+internal class RecyclerAdapter(context: Context, private val data: List<MediaStoreData>,
+                               glideRequests: GlideRequests) : RecyclerView.Adapter<RecyclerAdapter.ListViewHolder>(),
+        ListPreloader.PreloadSizeProvider<MediaStoreData>, ListPreloader.PreloadModelProvider<MediaStoreData> {
     private val screenWidth: Int
     private val requestBuilder: GlideRequest<Drawable>
 
@@ -109,7 +111,7 @@ internal class RecyclerAdapter(context: Context, private val data: List<MediaSto
         private val image: ImageView
 
         init {
-            image = itemView.findViewById(R.id.image)
+            image = itemView.findViewById(R.id.item_img)
         }
     }
 }

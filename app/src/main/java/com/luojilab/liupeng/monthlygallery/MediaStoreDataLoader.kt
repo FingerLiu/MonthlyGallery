@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.provider.MediaStore
 import android.support.v4.content.AsyncTaskLoader
+import android.util.Log
 
 import java.util.ArrayList
 import java.util.Collections
@@ -11,11 +12,16 @@ import java.util.Collections
 /**
  * Loads metadata from the media store for images and videos.
  */
-class MediaStoreDataLoader internal constructor(context: Context) : AsyncTaskLoader<List<MediaStoreData>>(context) {
+class MediaStoreDataLoader internal constructor(context: Context,
+                                                selection: String? = null,
+                                                selectionArgs: Array<String>? = null) : AsyncTaskLoader<List<MediaStoreData>>(context) {
 
     private var cached: List<MediaStoreData>? = null
     private var observerRegistered = false
     private val forceLoadContentObserver = ForceLoadContentObserver()
+
+    var selection: String? = selection
+    var selectionArgs: Array<String>? = selectionArgs
 
     override fun deliverResult(data: List<MediaStoreData>?) {
         if (!isReset && isStarted) {
@@ -75,11 +81,15 @@ class MediaStoreDataLoader internal constructor(context: Context) : AsyncTaskLoa
 
     private fun query(contentUri: Uri, projection: Array<String>, sortByCol: String,
                       idCol: String, dateTakenCol: String, dateModifiedCol: String, mimeTypeCol: String,
-                      orientationCol: String, type: MediaStoreData.Type): List<MediaStoreData> {
+                      orientationCol: String,
+                      type: MediaStoreData.Type): List<MediaStoreData> {
         val data = ArrayList<MediaStoreData>()
         val cursor = context.contentResolver
-                .query(contentUri, projection, null, null, "$sortByCol DESC") ?: return data
+                .query(contentUri, projection, selection, selectionArgs, "$sortByCol DESC") ?: return data
 
+        Log.d("!!!!", selection)
+        Log.d("$$$$$$", selectionArgs?.get(0))
+        Log.d("--------------", selectionArgs?.get(1))
         try {
             val idColNum = cursor.getColumnIndexOrThrow(idCol)
             val dateTakenColNum = cursor.getColumnIndexOrThrow(dateTakenCol)
